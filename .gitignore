@@ -1,0 +1,9 @@
+*.osu
+*.txt
+local.py
+*.spec
+venv
+dist
+build
+__pycache__
+.env
