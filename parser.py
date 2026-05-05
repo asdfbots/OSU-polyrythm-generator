@@ -62,8 +62,8 @@ def chunker(time_step:int, time_list:list):
         Returns:
             list[list[int]] list of chunks, each include times in range of one time_step
         Example:
-            >>> chunking(200,[100, 200, 400, 600, 700, 800])
-            [[100, 200], [400], [600,700], [800]]
+            >>> chunking(200,[(True, 100), (True, 200), (False, 400), (True, 600), (False, 700), (True, 800)])
+            [[(True, 100), (True, 200)], [(False, 400], [(True, 600), False, 700)], [(True, 800)]]
     '''
     times = time_list
     # print(times)
@@ -106,6 +106,10 @@ def hitobject_time_replace(time:int, hitobject:str):
     # print(hitonbject_split)
     return(','.join(hitonbject_split))
 
+def timepoint_time_replace(time, timepoint):
+    timepoint_parts = timepoint.split(',')
+    timepoint_parts[0] = str(time)
+    return(','.join(timepoint_parts))
 
 
 

@@ -5,20 +5,20 @@ def bpm_change(pattern_list):
         between consecutive patterns while preserving internal structure.
 
         Args:
-            pattern_list(list[list[float]]): A list of patterns, where each
-                pattern is a list of timepoints (e.g. [[3, 4, 5], [8, 9, 10]])
+            pattern_list(list[list[tuple(boolean, int)]]): A list of patterns, where each
+                pattern is a list of timepoints (e.g. [[(True, 3), (False, 4), (True, 5)], [(False, 8), (False, 9), (True, 10)]])
 
         Returns:
-            list[list[float]]: A transformed list of patterns where each
+            list[list[Tuple(Boolean, Tuple)]]: A transformed list of patterns where each
             timepoint is slightly shifted in time to simulate BPM variation
             between groups, while preserving relative spacing inside each group.
             All values are rounded to 2 decimal places to avoid floating point artifacts.
 
         Example:
-            >>> bpm_change([[3, 4, 5], [8, 9, 10], [12, 13, 14]])
-            [[3.0, 3.1, 3.2],
-             [3.5, 3.6, 3.7],
-             [3.9, 4.0, 4.1]]
+            >>> bpm_change([[(True, 3), (False, 4), (True, 5)], [(False, 8), (True, 9), (False, 10)], [(True, 12), (False, 13), (True, 14)]])
+            [[(True, 3), (False, 3), (True, 4)],
+             [(False, 5), (True, 5), (False, 6)],
+             [(True, 6), (False, 7), (True, 7)]]
     '''
     last_start_time = pattern_list[0][0][1]
     last_end_time = pattern_list[0][0][1]
