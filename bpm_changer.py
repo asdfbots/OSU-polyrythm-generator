@@ -20,18 +20,21 @@ def bpm_change(pattern_list):
              [(False, 5), (True, 5), (False, 6)],
              [(True, 6), (False, 7), (True, 7)]]
     '''
-    last_start_time = pattern_list[0][0][1]
-    last_end_time = pattern_list[0][0][1]
-    for pattern in (pattern_list):
+    last_start_time = pattern_list[0][1][0][1]
+    last_end_time = pattern_list[0][1][0][1]
+    for chunk_count, [chunk_bpm, pattern] in enumerate(pattern_list):
+
         rnd = round(uniform(0.7, 1.5), 1)
         start_time = pattern[0][1]
         end_time = pattern[-1][1]
         gap = start_time-last_end_time
         start_new = last_start_time+(gap*rnd)
-        for i, (is_obj, time) in enumerate(pattern):
+        pattern_list[chunk_count][0] = int(chunk_bpm*rnd)
+        for i, (is_obj, time, bpm) in enumerate(pattern):
             diff = time - start_time
             # print(f"diff= {diff}")
-            pattern[i] = is_obj, int((start_new+(diff*rnd)))
+
+            pattern[i] = is_obj, int((start_new+(diff*rnd))), bpm*rnd if bpm != None else None
         last_start_time = pattern[-1][1]
         last_end_time = end_time
     return(pattern_list)

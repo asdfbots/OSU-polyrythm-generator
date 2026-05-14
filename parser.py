@@ -24,6 +24,7 @@ def osu_parser(path:str):
             if timepoint == True:
                 timepoints_list.append(line)
             if line == "[HitObjects]\n":
+                print("hitobject founded")
                 hitobject = True
                 continue
             if hitobject == True:
@@ -32,26 +33,25 @@ def osu_parser(path:str):
     # print(hitobjects_list[1])
     # print("split")
     time_list = []
-    hitobj_list = []
     point_list = []
     for i in hitobjects_list:
+        # print(f"in proccess hit_obj{hitobj_list}")
         hitobject_parts = i.split(',')
         time = hitobject_parts[2]
         time = int(time)
-        hit_obj = (True, int(time))
+        hit_obj = (True, int(time), None)
         time_list.append(hit_obj)
-        hitobj_list.append(i)
     for i in timepoints_list:
         timepoint_parts = i.split(',')
         time = timepoint_parts[0]
+        bpm = int(60000/int(timepoint_parts[1]))
         time = int(time)
-        point_obj = (False, time)
+        point_obj = (False, time, bpm if bpm >0 else None)
         time_list.append(point_obj)
         point_list.append(i)
         time_list.sort(key=lambda x: (x[1], x[0]))
     # print(time_list)
-    return({"time_list": time_list, "hit_obj":hitobj_list, "timepoint_list":point_list})
-
+    return({"time_list": time_list, "hit_obj":hitobjects_list, "timepoint_list":point_list})
 
 def chunker(time_step:int, time_list:list):
     '''
@@ -71,21 +71,27 @@ def chunker(time_step:int, time_list:list):
     step = time_range
     temp = []
     chunk_list = []
-    for is_obj, time in times:
+    chunk_bpm = 0
+    for is_obj, time, bpm in times:
+        if is_obj == False and bpm != None:
+            chunk_bpm = bpm
         if time <= time_range:
+
             # print(f"i = {i}")
             # print(f"range = {time_range}")
-            temp.append((is_obj, time))
+            temp.append((is_obj, time, bpm))
             if times[-1] == time:
-                chunk_list.append(temp)
+                chunk_list.append([chunk_bpm, temp])
         else:
             if temp:
-                chunk_list.append(temp)
+                chunk_list.append([chunk_bpm, temp])
             while time > time_range:
                 time_range += step
-            temp=[(is_obj, time)]
+            temp=[(is_obj, time, bpm)]
+
             if times[-1] == time:
-                chunk_list.append(temp)
+                chunk_list.append([chunk_bpm, temp])
+
     return(chunk_list)
 
 
@@ -106,9 +112,24 @@ def hitobject_time_replace(time:int, hitobject:str):
     # print(hitonbject_split)
     return(','.join(hitonbject_split))
 
-def timepoint_time_replace(time, timepoint):
+def timepoint_time_replace(time, bpm, timepoint):
+    '''
+    Replacing original time on different
+    Args:
+        time(int): new time value
+        bpm(int): new bpm
+        timepoint(str): timepoint that will be changed
+    Returns:
+        str: updated timepoint string
+    Example:
+        >>> hitobject_time_replace(100, None, '1387,-100,4,2,0,80,0,0')
+        "100,-100,4,2,0,80,0,0"
+    '''
     timepoint_parts = timepoint.split(',')
     timepoint_parts[0] = str(time)
+    if bpm != None:
+        bpm = 60000/bpm
+        timepoint_parts[1] = str(bpm)
     return(','.join(timepoint_parts))
 
 
