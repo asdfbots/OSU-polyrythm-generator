@@ -94,7 +94,6 @@ def chunker(time_step:int, time_list:list):
 
     return(chunk_list)
 
-
 def hitobject_time_replace(time:int, hitobject:str):
     '''
     Replacing original time on different
@@ -132,7 +131,22 @@ def timepoint_time_replace(time, bpm, timepoint):
         timepoint_parts[1] = str(bpm)
     return(','.join(timepoint_parts))
 
+def timepoints_create(time, bpm):
+    '''
+    Creating timepoint with time and bpm
+    Args:
+        time[int]: time of timepoint
+        bpm[int]: bpm of timepoint  
+    Example:
+        >>> timepoint_create(100, 180)
+            "100,333,4,1,0,74,1,0"
 
+    '''
+    placeholder = '0,0,4,1,0,74,1,0'
+    timepoint_parts = placeholder.split(',')
+    timepoint_parts[0] = str(time)
+    timepoint_parts[1] = str(int(60000/bpm))
+    return(','.join(timepoint_parts))
 
 # print(hitobject_time_replace(100, '256,53,0,5,0,0:0:0:0:'))
 # print(chunking(20000, osu_parser("Megurine Luka - LukaLuka Night Fever (samipale) [MoNky's BeaT].osu")))
