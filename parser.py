@@ -72,7 +72,7 @@ def chunker(time_step:int, time_list:list):
     temp = []
     chunk_list = []
     chunk_bpm = 0
-    for is_obj, time, bpm in times:
+    for object_id, (is_obj, time, bpm) in enumerate(times):
         if is_obj == False and bpm != None:
             chunk_bpm = bpm
         if time <= time_range:
@@ -80,7 +80,7 @@ def chunker(time_step:int, time_list:list):
             # print(f"i = {i}")
             # print(f"range = {time_range}")
             temp.append((is_obj, time, bpm))
-            if times[-1] == time:
+            if object_id == len(times) - 1:
                 chunk_list.append([chunk_bpm, temp])
         else:
             if temp:
@@ -89,7 +89,7 @@ def chunker(time_step:int, time_list:list):
                 time_range += step
             temp=[(is_obj, time, bpm)]
 
-            if times[-1] == time:
+            if object_id== len(times):
                 chunk_list.append([chunk_bpm, temp])
 
     return(chunk_list)
@@ -142,7 +142,7 @@ def timepoints_create(time, bpm):
             "100,333,4,1,0,74,1,0"
 
     '''
-    placeholder = '0,0,4,1,0,74,1,0'
+    placeholder = '0,0,4,1,0,74,1,0\n'
     timepoint_parts = placeholder.split(',')
     timepoint_parts[0] = str(time)
     timepoint_parts[1] = str(int(60000/bpm))
@@ -152,3 +152,17 @@ def timepoints_create(time, bpm):
 # print(chunking(20000, osu_parser("Megurine Luka - LukaLuka Night Fever (samipale) [MoNky's BeaT].osu")))
 
 
+def merge_timepoints(orig, chunk):
+    print(type(orig))
+    print(type(chunk))
+    
+    new_timepoints =  orig+chunk
+    def get_time(line):
+        try:
+            return float(line.split('\n')[0])
+        except (ValueError, IndexError):
+            return 0.0
+    new_timepoints.sort(key=get_time)
+    new_timepoints = "".join(new_timepoints)
+    return("".join(new_timepoints))
+# def save(beatmap):

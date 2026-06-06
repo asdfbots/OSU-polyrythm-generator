@@ -2,7 +2,8 @@ from bpm_changer import bpm_change
 from parser import (osu_parser, chunker,
                      hitobject_time_replace,
                      timepoint_time_replace,
-                     timepoints_create)
+                     timepoints_create,
+                     merge_timepoints)
 
 osu_map = osu_parser("Megurine Luka - LukaLuka Night Fever (samipale) [MoNky's BeaT].osu")
 step = 1000
@@ -32,12 +33,14 @@ for count, chunk in enumerate(new_pattern):
             new_time_points.append(timepoint_time_replace(time, bpm, timepoint_list[timepoint_counter]))
             timepoint_counter += 1
 with open("objects.txt", "w") as file:
-    new_hitobjects = ''.join(new_hitobjects)
-    file.write(new_hitobjects)
+    txt_new_hitobjects = ''.join(new_hitobjects)
+    file.write(txt_new_hitobjects)
         
 with open("timepoints.txt", "w") as file:
-    new_time_points = ''.join(new_time_points)
-    file.write(new_time_points)
+    txt_new_time_points = ''.join(new_time_points)
+    file.write(txt_new_time_points)
 with open("new_points.txt", 'w') as file:
-    timepoints_bpm_changer =  '\n'.join(created_timepoints)
+    timepoints_bpm_changer =  ''.join(created_timepoints)
     file.write(timepoints_bpm_changer)
+with open("all_tp.txt", "w") as file:
+    file.write(merge_timepoints(new_time_points, created_timepoints))
