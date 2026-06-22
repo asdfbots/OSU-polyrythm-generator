@@ -39,13 +39,17 @@ def osu_parser(path:str):
         hitobject_parts = i.split(',')
         time = hitobject_parts[2]
         time = int(time)
+        if time < 0:
+            time[2] = 0
         hit_obj = (True, int(time), None)
         time_list.append(hit_obj)
     for i in timepoints_list:
         timepoint_parts = i.split(',')
         time = timepoint_parts[0]
-        bpm = int(60000/int(timepoint_parts[1]))
-        time = int(time)
+        bpm = float(60000/float(timepoint_parts[1]))
+        time = float(time)
+        if time < 0:
+            time = 0
         point_obj = (False, time, bpm if bpm >0 else None)
         time_list.append(point_obj)
         point_list.append(i)
@@ -72,6 +76,7 @@ def chunker(time_step:int, time_list:list):
     temp = []
     chunk_list = []
     chunk_bpm = 0
+    print(f"input {len(time_list)}")
     for object_id, (is_obj, time, bpm) in enumerate(times):
         if is_obj == False and bpm != None:
             chunk_bpm = bpm
@@ -85,13 +90,15 @@ def chunker(time_step:int, time_list:list):
         else:
             if temp:
                 chunk_list.append([chunk_bpm, temp])
+            time_range += step
             while time > time_range:
+                chunk_list.append([-10, []])
                 time_range += step
             temp=[(is_obj, time, bpm)]
 
             if object_id== len(times):
                 chunk_list.append([chunk_bpm, temp])
-
+    print(len(chunk_list))
     return(chunk_list)
 
 def hitobject_time_replace(time:int, hitobject:str):

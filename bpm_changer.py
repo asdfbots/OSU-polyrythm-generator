@@ -1,5 +1,5 @@
-from random import uniform
-def bpm_change(pattern_list):
+from random import choice
+def bpm_change(pattern_list, temp_list, step):
     '''
         Reorganizes groups of timepoints to create smooth tempo variation
         between consecutive patterns while preserving internal structure.
@@ -20,23 +20,27 @@ def bpm_change(pattern_list):
              [(False, 5), (True, 5), (False, 6)],
              [(True, 6), (False, 7), (True, 7)]]
     '''
-    last_start_time = pattern_list[0][1][0][1]
-    last_end_time = pattern_list[0][1][0][1]
+    rnd_list = []
+    current_uscaled = 0
+    current_chaged = 0
+    rnd = 1
     for chunk_count, [chunk_bpm, pattern] in enumerate(pattern_list):
-
-        rnd = round(uniform(0.7, 1.5), 1)
-        start_time = pattern[0][1]
-        end_time = pattern[-1][1]
-        gap = start_time-last_end_time
-        start_new = last_start_time+(gap*rnd)
-        pattern_list[chunk_count][0] = int(chunk_bpm*rnd)
+        if chunk_bpm == -10:
+            if rnd != 0:
+                rnd_list.append(1/rnd)
+            current_uscaled += step
+            current_chaged += step*rnd
+        rnd = choice(temp_list)
+        rnd_list.append(1/rnd)
+        pattern_list[chunk_count][0]=int(chunk_bpm*rnd)
         for i, (is_obj, time, bpm) in enumerate(pattern):
-            diff = time - start_time
+            diff = time-current_uscaled
             # print(f"diff= {diff}")
+            new_time = int(current_chaged + (diff * rnd))
+            pattern[i] = is_obj, new_time, bpm*rnd if bpm != None else None
 
-            pattern[i] = is_obj, int((start_new+(diff*rnd))), bpm*rnd if bpm != None else None
-        last_start_time = pattern[-1][1]
-        last_end_time = end_time
+        current_uscaled += step
+        current_chaged += (step * rnd)
+    print(rnd_list)
     return(pattern_list)
     # print([[round(i, 2) for i in p] for p in pattern_list])
-
